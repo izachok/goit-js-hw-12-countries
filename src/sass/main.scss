@@ -1,0 +1,20 @@
+.container {
+  padding: 30px;
+  max-width: 800px;
+}
+
+.country__header {
+  text-align: center;
+}
+
+.country__wrapper {
+  display: flex;
+}
+
+.country__info {
+  flex-basis: 50%;
+}
+
+.country__label {
+  font-weight: bold;
+}
