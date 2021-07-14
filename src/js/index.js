@@ -1,6 +1,7 @@
 import '../sass/main.scss';
 import '@pnotify/core/dist/BrightTheme.css';
 import countryCardTpl from '../templates/country-card.hbs';
+import countryListTpl from '../templates/country-list.hbs';
 
 import { error } from '@pnotify/core';
 import debounce from 'lodash.debounce';
@@ -14,12 +15,13 @@ const refs = {
 refs.searchInput.addEventListener('input', debounce(searchCountries, 500));
 
 function searchCountries(event) {
-  if (!event.target.value.trim()) {
+  const searchQuery = event.target.value.trim();
+  if (!searchQuery) {
     clearCountryContainer();
     return;
   }
 
-  fetchCountries(event.target.value).then(analyseCountires).catch(onFetchError);
+  fetchCountries(searchQuery).then(analyseCountires).catch(onFetchError);
 }
 
 function onFetchError() {
@@ -27,6 +29,11 @@ function onFetchError() {
 }
 
 function analyseCountires(countries) {
+  if (countries.length > 1 && countries.length <= 10) {
+    renderCountriesList(countries);
+    return;
+  }
+
   if (countries.length > 10) {
     showErrorNotification();
     return;
@@ -35,8 +42,7 @@ function analyseCountires(countries) {
     renderCountryCard(countries[0]);
     return;
   }
-
-  renderCountriesList(countries);
+  showErrorNotification('Oops, there is no country with that name');
 }
 
 function renderCountryCard(country) {
@@ -44,9 +50,7 @@ function renderCountryCard(country) {
 }
 
 function renderCountriesList(countries) {
-  refs.countriesContainer.innerHTML = `<ul>${countries
-    .map(country => `<li>${country.name}</li>`)
-    .join('')}</ul>`;
+  refs.countriesContainer.innerHTML = countryListTpl(countries);
 }
 
 function clearCountryContainer() {
